@@ -1,26 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useObserver } from 'mobx-react';
+import { useMainStore } from './store';
+import './App.scss';
+import { AppBar, Toolbar, Typography, CircularProgress } from '@material-ui/core';
+import ModalWrap from './components/modal';
+import Pagination from './components/pagination';
+import TableComponent from './components/table';
+import FilterType from './components/filterType';
+import FilterName from './components/filterName';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+export default function App() {
+	const store = useMainStore();
+	
+	return useObserver(() => (
+		<div className="App">
+			<AppBar position="static" color="primary">
+				<Toolbar>
+					<Typography variant="h4" className="title">Pokedex</Typography>
+				</Toolbar>
+			</AppBar>
 
-export default App;
+			{store.errors && store.errors.length > 0 ? <div className="error">
+				{store.errors.map((error, index) => <div key={index}>{error}</div>)}
+			</div> : <div className="main">
+				{store.loading && <div className="progress">
+					<CircularProgress color="primary"/>
+				</div>}
+
+				<FilterName />
+				<FilterType />
+				<TableComponent />
+				<Pagination />
+			</div>}
+
+			<ModalWrap />
+		</div>
+	));
+};
